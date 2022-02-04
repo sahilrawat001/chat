@@ -1,22 +1,41 @@
 import MyMessage from './MyMessage';
 import TheirMessage from './TheirMessage';
-
 import MessageForm from './MessageForm';
-
+ 
 const ChatFeed = (props) => {
   const { chats, activeChat, userName, messages } = props;
 
   const chat = chats && chats[activeChat];
-
+  const RenderAReadReceipt = ({ index, isMyMessage, person }) => {
+    if (person.person.avatar) {
+      return (
+        <div
+          key={`read_${index}`}
+          className="read-receipt"
+          style={{
+            float: isMyMessage ? 'right' : 'left',
+            backgroundImage: person.person.avatar && `url(${person.person.avatar})`,
+          }}
+        />
+      );
+    }
+    const colors = ['red', 'black', 'green', 'purple', 'blue'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    return (
+      <div
+        key={`read_${index}`}
+        className="read-receipt-null"
+        style={{
+          float: isMyMessage ? 'right' : 'left',
+          backgroundColor: randomColor,
+        }}
+      >
+        {person.person.username.substring(0, 2).toUpperCase()}
+      </div>
+    );
+  };
   const renderReadReceipts = (message, isMyMessage) => chat.people.map((person, index) => person.last_read === message.id && (
-    <div
-      key={`read_${index}`}
-      className="read-receipt"
-      style={{
-        float: isMyMessage ? 'right' : 'left',
-        backgroundImage: person.person.avatar && `url(${person.person.avatar})`,
-      }}
-    />
+    <RenderAReadReceipt index={index} isMyMessage={isMyMessage} person={person} />
   ));
 
   const renderMessages = () => {
@@ -54,9 +73,10 @@ const ChatFeed = (props) => {
       </div>
       {renderMessages()}
       <div style={{ height: '100px' }} />
-<div className="message-form-container">
-<MessageForm {...props} chatId={activeChat} />
-</div>
+      <div className="message-form-container">
+        <MessageForm {...props} chatId={activeChat} />
+      </div>
+     
     </div>
   );
 };
